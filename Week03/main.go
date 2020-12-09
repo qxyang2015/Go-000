@@ -46,6 +46,8 @@ func main() {
 			}
 		}
 	})
+
+	//接收到err退出：服务1、服务2
 	err := g.Wait()
 	if err != nil {
 		close(stop)
