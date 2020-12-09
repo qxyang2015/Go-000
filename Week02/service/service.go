@@ -1,9 +1,11 @@
 package service
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/pkg/errors"
+	pkg_errors "github.com/pkg/errors"
 	"github.com/qxyang2015/Go-000/Week02/dao"
 	"net/http"
 )
@@ -27,12 +29,23 @@ func GetNameService(w http.ResponseWriter, r *http.Request) {
 
 	//调用Dao函数
 	name, err := dao.GetUserName("qxyang")
+	//查询数据库为空err处理
+	if errors.Is(err, sql.ErrNoRows) {
+		//打印Error日志,打印所有堆栈信息
+		fmt.Printf("查询数据库为空 %+v\n", err)
+		//填充response
+		retRes.Code = -2
+		retRes.Msg = fmt.Sprintf("查询数据库为空")
+		return
+	}
+	//通用错误处理
 	if err != nil {
 		//打印Error日志,打印所有堆栈信息
 		fmt.Printf("Error:Serverce查询Dao错误 %+v\n", err)
 		//填充response
 		retRes.Code = -1
-		retRes.Msg = fmt.Sprintf("查询用户名出现错误[%v]", errors.Cause(err))
+		retRes.Msg = fmt.Sprintf("查询用户名出现错误")
+		return
 	}
 	retRes.Data = name
 }
