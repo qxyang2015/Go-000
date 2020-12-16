@@ -18,9 +18,9 @@ import (
 
 func main() {
 	stop := make(chan struct{})
+
 	//使用一个携带上下文信息的errgroup
 	g, _ := errgroup.WithContext(context.Background())
-
 	//服务1
 	g.Go(func() error {
 		muxDemo1 := http.NewServeMux()
@@ -42,7 +42,7 @@ func main() {
 			fmt.Println("等待退出信号")
 			select {
 			case <-quit:
-				return errors.New("收到退出信号") //这个人造错误用来退出errgroup
+				return errors.New("收到退出信号") //根据signal信号退出两个其余服务
 			}
 		}
 	})
@@ -50,6 +50,7 @@ func main() {
 	//接收到err退出：服务1、服务2
 	err := g.Wait()
 	if err != nil {
+		fmt.Println(err)
 		close(stop)
 	}
 	fmt.Println("Done!")
