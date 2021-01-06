@@ -1,1 +1,5 @@
-package Week06
+package main
+
+func main() {
+
+}
